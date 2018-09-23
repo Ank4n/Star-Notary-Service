@@ -44,9 +44,9 @@ app.post('/block', async (req, res, next) => {
         }
 
         await chain.addBlock(req.body);
-        res.send(JSON.parse(await chain.getBlock(chain.getBlockHeight())));
+        res.send(JSON.parse(await chain.getBlock(await chain.getBlockHeight())));
 
-        if (req.body.address){
+        if (req.body.address) {
             NotaryService.removeAccess(req.body.address);
         }
         next();
@@ -78,6 +78,10 @@ app.post('/message-signature/validate', async (req, res) => {
     }
 
     res.json(validateObject);
+});
+
+app.get('/stars/:query', async (req, res) => {
+    res.json(await chain.getStarBlock(req.params.query));
 });
 
 
