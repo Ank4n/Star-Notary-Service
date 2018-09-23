@@ -1,14 +1,14 @@
 const blockchain = require('./blockchain');
-const RequestValidationResponse = require('./model/requestValidateResponse');
+const NotaryService = require('./notary-service');
 const express = require('express');
 const bodyParser = require("body-parser");
-const NodeCache = require("node-cache");
+
+const notaryService = new NotaryService();
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-const memPool = new NodeCache({stdTTL: 5 * 60});
 
 let chain;
 
@@ -31,24 +31,32 @@ app.post('/block', async (req, res, next) => {
     }
 );
 
-app.post('/requestValidation', async (req, res, next) => {
+app.post('/requestValidation', async (req, res) => {
         if (!req.body.address) {
-            res.status(400);
+            res.status(400).json({message: 'Missing address field'});
             return;
         }
 
-        let ttl = memPool.getTtl(req.body.address);
-        let requestValidationResponse = new RequestValidationResponse(req.body.address);
-
-        if (!ttl)
-            memPool.set(req.body.address, JSON.stringify(requestValidationResponse));
-        else
-            requestValidationResponse.validationWindow = Math.floor((ttl - Date.now())/1000);
-
-        res.json(requestValidationResponse);
-        next();
+        res.json(notaryService.requestValidation(req.body.address));
     }
 );
+
+app.post('/message-signature/validate', async (req, res) => {
+    if (!req.body.address || !req.body.signature) {
+        res.status(400).json({message: 'Missing address or signature field'});
+        return;
+    }
+
+    let validateObject = notaryService.validate(req.body.address, req.body.signature);
+
+    if (!validateObject) {
+        res.status(404).json(
+            {message: 'Validation request not found or has expired. Create a new validation request'});
+        return;
+    }
+
+    res.json(validateObject);
+});
 
 
 app.listen(port, () => init());
