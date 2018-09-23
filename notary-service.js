@@ -56,6 +56,16 @@ class NotaryService {
 
     }
 
+    static hasAccessToRegister(address) {
+        let memPoolObject = cache.get(address);
+        if (!memPoolObject) return false;
+
+        return JSON.parse(memPoolObject).validated;
+    }
+
+    static removeAccess(address) {
+        cache.del(address);
+    }
 }
 
 

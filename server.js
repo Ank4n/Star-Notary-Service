@@ -25,8 +25,30 @@ app.get('/block/:height', async (req, res, next) => {
 );
 
 app.post('/block', async (req, res, next) => {
-        await chain.addBlock(req.body.data);
+
+        if (req.body.star) {
+            if (!req.body.address) {
+                res.status(400).json({message: 'Missing address field'});
+                return;
+            }
+
+            if (!NotaryService.hasAccessToRegister(req.body.address)) {
+                res.status(401).json({message: 'You do not have access to register a star. Please validate your request first with your blockchain Id'});
+                return;
+            }
+
+            if (!req.body.star.ra || !req.body.star.dec || !req.body.star.story) {
+                res.status(400).json({message: 'Missing mandatory star fields: [ra, dec, story]'});
+                return;
+            }
+        }
+
+        await chain.addBlock(req.body);
         res.send(JSON.parse(await chain.getBlock(chain.getBlockHeight())));
+
+        if (req.body.address){
+            NotaryService.removeAccess(req.body.address);
+        }
         next();
     }
 );

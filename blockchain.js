@@ -6,6 +6,8 @@ const SHA256 = require('crypto-js/sha256');
 const level = require('level');
 const chainDB = './chaindata';
 const db = level(chainDB);
+const NotaryService = require('./notary-service');
+const notaryService = new NotaryService();
 
 // caching chain height
 let chainHeight = 0;
@@ -16,11 +18,28 @@ let chainHeight = 0;
 
 class Block {
     constructor(body) {
-        this.hash = "",
-            this.height = 0,
-            this.body = body,
-            this.time = 0,
-            this.previousBlockHash = ""
+        this.hash = "";
+        this.height = 0;
+        this.body = body;
+        this.time = 0;
+        this.previousBlockHash = "";
+    }
+}
+
+class StarBody {
+    constructor(star, address) {
+        this.star = star;
+        this.address = address;
+    }
+}
+
+class Star{
+    constructor(dec, ra, story, magnitude, constellation) {
+        this.dec = dec;
+        this.ra = ra;
+        this.story = story;
+        this.magnitude = magnitude;
+        this.constellation = constellation;
     }
 }
 
@@ -30,7 +49,6 @@ class Block {
 
 class Blockchain {
     constructor() {
-        Blockchain.addGenesisBlock();
         init();
     }
 
@@ -49,7 +67,7 @@ class Blockchain {
     // Add new block
     async addBlock(data) {
 
-        let newBlock = new Block("data");
+        let newBlock = new Block(data);
         // Block height
         newBlock.height = chainHeight + 1;
         // UTC timestamp
@@ -139,6 +157,10 @@ function init() {
     }).on('close', function () {
         // height starts from 0
         chainHeight = i - 1;
+
+        if (i === 0) {
+            Blockchain.addGenesisBlock();
+        }
         // add genesis block if this is the first transaction
         console.log('Blockchain initialized with height ' + (i - 1));
     });
