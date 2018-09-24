@@ -81,7 +81,19 @@ app.post('/message-signature/validate', async (req, res) => {
 });
 
 app.get('/stars/:query', async (req, res) => {
-    res.json(await chain.getStarBlock(req.params.query));
+    let blocks = await chain.getStarBlock(req.params.query);
+    if (!blocks){
+        res.status(404).json(
+            {message: 'No registered star found'});
+        return;
+    }
+
+    if (blocks === 'invalid'){
+        res.status(400).json(
+            {message: 'Sorry, we could not understand your query. Did you made a typo?'});
+        return;
+    }
+    res.json(blocks);
 });
 
 

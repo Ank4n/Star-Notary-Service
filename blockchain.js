@@ -98,7 +98,6 @@ class Blockchain {
 
     // get block
     async getBlock(height) {
-        console.log("get Block at height:", height);
         return await db.get(height)
             .catch(function (err) {
                 console.error(err);
@@ -109,17 +108,30 @@ class Blockchain {
     // get block
     async getStarBlock(query) {
         let array = query.split(":");
-        let height = await db.get(array[1]);
+        let blockHeights;
 
-        if (array[0] === "hash") {
-            return JSON.parse(await db.get(height));
+        try {
+            blockHeights = await db.get(array[1]);
+        } catch (e) {
+            return null;
         }
 
+        if (array[0] === "hash") {
+            try {
+                let block = await db.get(blockHeights);
+                return JSON.parse(block);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        if (array[0] !== "address") return "invalid";
+
         // if queried by wallet id
-        let heightArr = height.split(",");
+        let heightArr = blockHeights.split(",");
         let blocks = [];
 
-        for(let i = 0; i< heightArr.length; i++){
+        for (let i = 0; i < heightArr.length; i++) {
             let block = await db.get(heightArr[i]);
             blocks.push(JSON.parse(block));
         }
@@ -195,7 +207,6 @@ async function setBlockHeight(height) {
 
 async function indexBlock(newBlock) {
     // to find blocks by hash
-    console.log("Indexing the new blocks");
     await db.put(newBlock.hash, newBlock.height);
     let address = newBlock.body.address;
 

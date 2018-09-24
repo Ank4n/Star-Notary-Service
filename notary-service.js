@@ -44,8 +44,12 @@ class NotaryService {
         let ttl = cache.getTtl(address);
 
         let message = buildMessage(address, memPoolObject.timestamp);
-        let signatureValid = bitcoinMessage.verify(message,
-            address, signature);
+
+        let signatureValid = false;
+        try {
+            signatureValid = bitcoinMessage.verify(message,
+                address, signature);
+        } catch (e) {}
 
         let validationWindow = calculateValidationWindow(ttl);
 
