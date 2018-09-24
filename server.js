@@ -18,7 +18,7 @@ app.get('/block/:height', async (req, res, next) => {
         if (req.params.height > chain.getBlockHeight())
             res.sendStatus(404);
         else
-            res.json(JSON.parse(await chain.getBlock(parseInt(req.params.height))));
+            res.json(await chain.getBlockv2(parseInt(req.params.height)));
 
         next();
     }
@@ -39,6 +39,13 @@ app.post('/block', async (req, res, next) => {
 
             if (!req.body.star.ra || !req.body.star.dec || !req.body.star.story) {
                 res.status(400).json({message: 'Missing mandatory star fields: [ra, dec, story]'});
+                return;
+            }
+
+            let storyByteLength = Buffer.byteLength(req.body.star.story, 'utf-8');
+
+            if (storyByteLength > 500) {
+                res.status(413).json({message: 'Your star story is too large'});
                 return;
             }
         }

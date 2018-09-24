@@ -80,6 +80,10 @@ class Blockchain {
         // Block hash with SHA256 using newBlock and converting to a string
         newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
 
+        let story = newBlock.body.star.story;
+        if (story){
+            newBlock.body.star.story = new Buffer(story).toString("hex");
+        }
         // Adding block object to chain
         await setBlockHeight(newBlock.height);
         await addToDB(newBlock.height, JSON.stringify(newBlock));
@@ -105,6 +109,17 @@ class Blockchain {
             });
     }
 
+    async getBlockv2(height) {
+        let blockJson = await db.get(height)
+            .catch(function (err) {
+                console.error(err);
+                return err;
+            });
+
+        let block = JSON.parse(blockJson);
+        return appendDecodedStory(block);
+    }
+
     // get block
     async getStarBlock(query) {
         let array = query.split(":");
@@ -119,7 +134,8 @@ class Blockchain {
         if (array[0] === "hash") {
             try {
                 let block = await db.get(blockHeights);
-                return JSON.parse(block);
+                let blockObject = JSON.parse(block);
+                return appendDecodedStory(blockObject);
             } catch (e) {
                 return null;
             }
@@ -133,7 +149,8 @@ class Blockchain {
 
         for (let i = 0; i < heightArr.length; i++) {
             let block = await db.get(heightArr[i]);
-            blocks.push(JSON.parse(block));
+            let blockObject = JSON.parse(block);
+            blocks.push(appendDecodedStory(blockObject));
         }
 
         console.log("Found " + blocks.length + " blocks");
@@ -219,6 +236,14 @@ async function indexBlock(newBlock) {
         }
 
     }
+}
+
+function appendDecodedStory(block){
+    let encodedStory = block.body.star.story;
+    if (encodedStory){
+        block.body.star.storyDecoded = new Buffer(encodedStory, 'hex').toString();
+    }
+    return block;
 }
 
 module.exports = Blockchain;

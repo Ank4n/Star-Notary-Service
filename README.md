@@ -117,7 +117,7 @@ Example Response
         "star": {
             "dec": "-26° 29' 24.9",
             "ra": "16h 29m 1.0s",
-            "story": "Found star using https://www.google.com/sky/"
+            "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f"
         }
     },
     "time": "1537811260",
@@ -149,7 +149,8 @@ Example Response
             "star": {
                 "dec": "-26° 29' 24.9",
                 "ra": "16h 29m 1.0s",
-                "story": "Found star using https://www.google.com/sky/"
+                "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+                "storyDecoded": "Found star using https://www.google.com/sky/"
             }
         },
         "time": "1537729194",
@@ -163,7 +164,8 @@ Example Response
             "star": {
                 "dec": "-26° 29' 24.9",
                 "ra": "16h 29m 1.0s",
-                "story": "Found star using https://www.google.com/sky/"
+                "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+                "storyDecoded": "Found star using https://www.google.com/sky/"
             }
         },
         "time": "1537729200",
@@ -195,7 +197,8 @@ Example Response
         "star": {
             "dec": "-26° 29' 24.9",
             "ra": "16h 29m 1.0s",
-            "story": "Found star using https://www.google.com/sky/"
+            "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+            "storyDecoded": "Found star using https://www.google.com/sky/"
         }
     },
     "time": "1537809222",
@@ -226,7 +229,8 @@ Example Response
         "star": {
             "dec": "-26° 29' 24.9",
             "ra": "16h 29m 1.0s",
-            "story": "Found star using https://www.google.com/sky/"
+            "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+            "storyDecoded": "Found star using https://www.google.com/sky/"
         }
     },
     "time": "1537809222",
